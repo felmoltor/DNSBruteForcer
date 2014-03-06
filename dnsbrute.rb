@@ -7,10 +7,13 @@ require 'colorize'
 require_relative 'DNSBruteForcer'
 
 
+############
+
 def parseOptions()
   options = {
     :domain => nil,
     :dictionary => nil,
+    :dns => nil,
     :outputfile => nil
   }
   optparse = OptionParser.new do |opts|   
@@ -22,6 +25,9 @@ def parseOptions()
     end
     opts.on( '-D', '--dictionary FILE', String, "Dicionary file containing the list of subdomains to check" ) do |dictionary|
       options[:dictionary] = dictionary
+    end
+    opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
+      options[:dns] = dns
     end
     opts.on( '-o', '--output [OFILE]', 'Save the summary of the execution to this CSV file' ) do |ofile|
       options[:outputfile] = ofile
@@ -41,6 +47,8 @@ def parseOptions()
   
   return options
 end
+
+############
 
 def printBanner()
     banner = %q{
@@ -66,16 +74,24 @@ op = parseOptions()
 
 dnsb = DNSBruteForcer.new()
 auths = dnsb.getAuthDNSServers(op[:domain])
-puts "The authoritative servers of the domain are: "
+puts "The authoritative servers of #{op[:domain]} are: "
 auths.each{|s|
   puts "- #{s}"
 }
 nsservers = dnsb.getAllDNSServer(op[:domain])
-puts "The name servers of this domains are:"
+puts "The name servers of #{op[:domain]} are:"
 nsservers.each{|s|
   puts "- #{s}"
 }
-dnsb.setNameServers(nsservers)
+
+if !op[:dns].nil?
+  puts "Forcing the enumeration against customiced DNS '#{op[:dns]}'"
+  dnsb.setNameServers(op[:dns])
+else
+  puts "Forcing the enumeration against domain nameservers (#{nsservers.join(', ')})."
+  dnsb.setNameServers(nsservers)  
+end
+
 zones = dnsb.transferZone(op[:domain])
 
 if !zones.nil?

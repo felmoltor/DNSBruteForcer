@@ -85,7 +85,6 @@ class DNSBruteForcer
           # Get the IP of the SOA mname and set it as our new dns resolver
           soasearchresponse = @dnsserver.query(soaname,Net::DNS::A)
           soasearchresponse.answer.each { |arecord|
-            puts "arecord: #{arecord}"
             soaips << arecord.address.to_s
           }
           
@@ -94,7 +93,6 @@ class DNSBruteForcer
             googledns = Net::DNS::Resolver.new(:nameservers => ["8.8.8.8"], :searchlist=>[],:domain=>[],:udp_timeout=>15)
             soasearchresponse = googledns.query(soaname,Net::DNS::A)
             soasearchresponse.answer.each { |arecord|
-              puts "arecord: #{arecord.address.to_s}"
               soaips << arecord.address.to_s
             }
           end
@@ -204,7 +202,6 @@ class DNSBruteForcer
         # This is probably a shared hosting and pointing to a SOA.
         # Just ask the SOA
         soaserver = getAllSOAServer(domain)
-        puts "SOA Servers son: #{soaserver}"
         if !soaserver.nil? and soaserver.size > 0
           if alldns
             soaserver.each{|soaip|
