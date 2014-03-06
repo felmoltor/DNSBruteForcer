@@ -74,6 +74,42 @@ class DNSBruteForcer
   
   ###################
   
+  def getAllSOAServer(domain)
+    soaips = []
+    begin
+      dnss = @dnsserver.query(domain,Net::DNS::SOA)
+      dnss.answer.each{|record|
+        # Get the IP of this authdns and set it as our new DNS resolver
+        if record.class == Net::DNS::RR::SOA
+          soaname = record.mname
+          # Get the IP of the SOA mname and set it as our new dns resolver
+          soasearchresponse = @dnsserver.query(soaname,Net::DNS::A)
+          soasearchresponse.answer.each { |arecord|
+            puts "arecord: #{arecord}"
+            soaips << arecord.address.to_s
+          }
+          
+          # For emergencies when the soa IP is not found we'll ask Google DNS
+          if soaips.size == 0
+            googledns = Net::DNS::Resolver.new(:nameservers => ["8.8.8.8"], :searchlist=>[],:domain=>[],:udp_timeout=>15)
+            soasearchresponse = googledns.query(soaname,Net::DNS::A)
+            soasearchresponse.answer.each { |arecord|
+              puts "arecord: #{arecord.address.to_s}"
+              soaips << arecord.address.to_s
+            }
+          end
+        end
+      }
+      return soaips
+    rescue Net::DNS::Resolver::NoResponseError => terror
+      puts "Error: #{terror.message}"
+      return nil
+    end
+    return nil
+  end
+  
+  ###################
+  
   def transferZone(domain)
     # Trying transfer zone for all NS of the domain
     zone = {
@@ -132,7 +168,7 @@ class DNSBruteForcer
     File.open(@dictionary,"r").each{|subdomain|
       targeth = "#{subdomain.chomp}.#{domain}"
       begin 
-      response = targetdns.query(targeth)
+        response = targetdns.query(targeth)
         if response.header.rCode.type == "NoError"
           response.answer.each {|record|
             foundhosts << targeth
@@ -148,24 +184,43 @@ class DNSBruteForcer
   ###################
   
   def bruteforceSubdomains(domain,alldns=false)
+    foundhosts = []
+    
     if @dictionary.nil?
       return nil
     else
       nsservers = self.getAllDNSServer(domain)
-      
-      if !nsservers.nil?
+      if !nsservers.nil? and nsservers.size > 0
         if alldns
           nsservers.each{|dnsip|
-            bruteforceSubdomainsWithDNS(dnsip,domain)
+            foundhosts = bruteforceSubdomainsWithDNS(dnsip,domain)
           }
         else # Ask only to the first DNS
           dnsip = nsservers[0]
-          bruteforceSubdomainsWithDNS(dnsip,domain)
+          foundhosts = bruteforceSubdomainsWithDNS(dnsip,domain)
         end
       else
         # We could not find nameservers for this domain
-        return nil
+        # This is probably a shared hosting and pointing to a SOA.
+        # Just ask the SOA
+        soaserver = getAllSOAServer(domain)
+        puts "SOA Servers son: #{soaserver}"
+        if !soaserver.nil? and soaserver.size > 0
+          if alldns
+            soaserver.each{|soaip|
+              foundhosts = bruteforceSubdomainsWithDNS(soaip,domain)
+            }
+          else # Ask only to the first DNS
+            soaip = soaserver[0]
+            foundhosts = bruteforceSubdomainsWithDNS(soaip,domain)
+          end
+        else
+          return nil          
+        end
       end
     end
+    
+    return foundhosts
   end
+  
 end

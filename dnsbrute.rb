@@ -70,7 +70,12 @@ puts "The authoritative servers of the domain are: "
 auths.each{|s|
   puts "- #{s}"
 }
-dnsb.setNameServers(auths)
+nsservers = dnsb.getAllDNSServer(op[:domain])
+puts "The name servers of this domains are:"
+nsservers.each{|s|
+  puts "- #{s}"
+}
+dnsb.setNameServers(nsservers)
 zones = dnsb.transferZone(op[:domain])
 
 if !zones.nil?
@@ -82,7 +87,7 @@ else
     if File.exists?(op[:dictionary])
         dnsb.dictionary = op[:dictionary]
         hosts = dnsb.bruteforceSubdomains(op[:domain])
-        if hosts.size > 0
+        if !hosts.nil? and hosts.size > 0
           puts "#{hosts.size} hosts were found with the bruteforce attack!".green
           hosts.each {|h|
             puts "- #{h}"  
