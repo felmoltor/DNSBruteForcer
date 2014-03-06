@@ -71,17 +71,17 @@ auths.each{|s|
   puts "- #{s}"
 }
 dnsb.setNameServers(auths)
-zones = dnsb.transferZone(d)
+zones = dnsb.transferZone(op[:domain])
 
 if !zones.nil?
     puts "Zone transfer is allowed in one or more of it's NS!".green
     pp zones
 else
     puts "Zone transfer is not allowed in any of it's NS.".red
-    puts "Starting bruteforce scan..."
+    puts "Starting bruteforce scan. Please be patient..."
     if File.exists?(op[:dictionary])
-        dnsb.dictionary = dict
-        hosts = dnsb.bruteforceSubdomains(d)
+        dnsb.dictionary = op[:dictionary]
+        hosts = dnsb.bruteforceSubdomains(op[:domain])
         if hosts.size > 0
           puts "#{hosts.size} hosts were found with the bruteforce attack!".green
           hosts.each {|h|

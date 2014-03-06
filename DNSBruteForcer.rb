@@ -131,14 +131,15 @@ class DNSBruteForcer
     targetdns = Net::DNS::Resolver.new(:nameservers => dns, :searchlist=>[],:domain=>[],:udp_timeout=>15)
     File.open(@dictionary,"r").each{|subdomain|
       targeth = "#{subdomain.chomp}.#{domain}"
-      puts "Preguntando por #{targeth}"
+      begin 
       response = targetdns.query(targeth)
-      if response.header.rCode.type == "NoError"
-        response.answer.each {|record|
-          foundhosts << targeth
-        }
-      else
-        puts "El servidor rechazo tu peticion con un #{response.header.rCode}"
+        if response.header.rCode.type == "NoError"
+          response.answer.each {|record|
+            foundhosts << targeth
+          }
+        end
+      rescue Net::DNS::Resolver::NoResponseError
+        $stderr.puts "DNS server '#{dns}' did not respond to our query..."
       end
     }
     return foundhosts.uniq!
@@ -151,7 +152,6 @@ class DNSBruteForcer
       return nil
     else
       nsservers = self.getAllDNSServer(domain)
-      pp nsservers
       
       if !nsservers.nil?
         if alldns
