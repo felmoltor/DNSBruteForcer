@@ -10,6 +10,7 @@ Usage
 Usage: ./dnsbrute.rb [OPTIONS]
     -d, --domain DOMAIN              Domain to explore for robots.txt (This option needs program 'theharvester' in your PATH)
     -D, --dictionary FILE            Dicionary file containing the list of subdomains to check
+    -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
     -o, --output [OFILE]             Save the summary of the execution to this CSV file
     -h, --help                       Help screen
 ```
