@@ -94,7 +94,7 @@ def printBanner()
     ###########################
     #                         #
     #    DNS Brute Forcer     # 
-    #      Version: 0.1       #
+    #      Version: 0.2       #
     #  Author: Felipe Molina  #
     #   Twitter: @felmoltor   #
     #                         #

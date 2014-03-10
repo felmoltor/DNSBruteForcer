@@ -19,34 +19,49 @@ Output example
 --------------
 
 ```
-felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb -d facebook.com -D dictionaries/subdomains-top1mil-50.txt 
+felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb -d telepizza.es -D dictionaries/subdomains-top1mil-500.txt -o telepizza.es.csv
 
     ###########################
     #                         #
     #    DNS Brute Forcer     # 
-    #      Version: 0.1       #
+    #      Version: 0.2       #
     #  Author: Felipe Molina  #
     #   Twitter: @felmoltor   #
     #                         #
     ###########################
 
-The authoritative servers of the domain are: 
-- 69.171.239.12
-Zone transfer is not allowed in any of it's NS.
-Starting bruteforce scan...
-14 hosts were found with the bruteforce attack!
-- www.facebook.com
-- ns1.facebook.com
-- ns2.facebook.com
-- m.facebook.com
-- blog.facebook.com
-- dev.facebook.com
-- www2.facebook.com
-- ns3.facebook.com
-- new.facebook.com
-- beta.facebook.com
-- secure.facebook.com
-- ns4.facebook.com
-- static.facebook.com
-- lists.facebook.com
+    The authoritative servers of telepizza.es are: 
+    - 217.116.0.176
+    The name servers of telepizza.es are:
+    - 217.116.0.177
+    - 217.116.0.176
+    Forcing the enumeration against domain nameservers (217.116.0.177, 217.116.0.176).
+    Zone transfer is not allowed in any of it's NS.
+    Starting bruteforce scan. Please be patient...
+    22 hosts were found with the bruteforce attack!
+    - www.telepizza.es - 213.192.247.250
+    - ftp.telepizza.es - 217.116.0.173
+    - webmail.telepizza.es - 217.116.0.154
+    - smtp.telepizza.es - 217.116.0.228
+    - test.telepizza.es - 213.192.228.101
+    - m.telepizza.es - 213.192.247.250
+    - blog.telepizza.es - 92.43.17.215
+    - pop3.telepizza.es - 217.116.0.237
+    - mx.telepizza.es - 217.116.0.227
+    - imap.telepizza.es - 217.116.0.237
+    - beta.telepizza.es - 212.80.167.162
+    - secure.telepizza.es - secure.telepizza.es.c.footprint.net.
+    - static.telepizza.es - downloads.telepizza.es.c.footprint.net.
+    - web.telepizza.es - 213.192.228.126
+    - crm.telepizza.es - sys.emailmanager.com.
+    - cms.telepizza.es - 213.192.228.100
+    - app.telepizza.es - app.emailmanager.com.
+    - tv.telepizza.es - 213.192.228.101
+    - docs.telepizza.es - 213.192.228.103
+    - correo.telepizza.es - 213.192.247.252
+    - content.telepizza.es - 213.192.228.126
+    - lab.telepizza.es - 213.192.228.101
+    Output file 'telepizza.es.csv' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: O
+    Overwriting file...
+
 ```
