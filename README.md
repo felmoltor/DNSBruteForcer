@@ -11,6 +11,7 @@ Usage: ./dnsbrute.rb [OPTIONS]
     -d, --domain DOMAIN              Domain to explore for robots.txt (This option needs program 'theharvester' in your PATH)
     -D, --dictionary FILE            Dicionary file containing the list of subdomains to check
     -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
+    -g, --geo-info                   Get also the geographic information of the host from freegeoip.net
     -o, --output [OFILE]             Save the summary of the execution to this CSV file
     -h, --help                       Help screen
 ```
@@ -19,7 +20,7 @@ Output example
 --------------
 
 ```
-felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb -d telepizza.es -D dictionaries/subdomains-top1mil-500.txt -o telepizza.es.csv
+felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb --geo-info -d cocacola.es -D dictionaries/subdomains-top1mil-500.txt -o cocacola.es.csv 
 
     ###########################
     #                         #
@@ -30,38 +31,33 @@ felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb -d telepizza.es -D dictiona
     #                         #
     ###########################
 
-    The authoritative servers of telepizza.es are: 
-    - 217.116.0.176
-    The name servers of telepizza.es are:
-    - 217.116.0.177
-    - 217.116.0.176
-    Forcing the enumeration against domain nameservers (217.116.0.177, 217.116.0.176).
+    The authoritative servers of cocacola.es are: 
+    - 161.162.84.154
+    The name servers of cocacola.es are:
+    - 161.162.84.151
+    - 161.162.92.151
+    - 144.228.255.10
+    - 161.162.84.154
+    - 206.228.179.10
+    - 144.228.254.10
+    Forcing the enumeration against domain nameservers (161.162.84.151, 161.162.92.151, 144.228.255.10, 161.162.84.154, 206.228.179.10, 144.228.254.10).
     Zone transfer is not allowed in any of it's NS.
     Starting bruteforce scan. Please be patient...
-    22 hosts were found with the bruteforce attack!
-    - www.telepizza.es - 213.192.247.250
-    - ftp.telepizza.es - 217.116.0.173
-    - webmail.telepizza.es - 217.116.0.154
-    - smtp.telepizza.es - 217.116.0.228
-    - test.telepizza.es - 213.192.228.101
-    - m.telepizza.es - 213.192.247.250
-    - blog.telepizza.es - 92.43.17.215
-    - pop3.telepizza.es - 217.116.0.237
-    - mx.telepizza.es - 217.116.0.227
-    - imap.telepizza.es - 217.116.0.237
-    - beta.telepizza.es - 212.80.167.162
-    - secure.telepizza.es - secure.telepizza.es.c.footprint.net.
-    - static.telepizza.es - downloads.telepizza.es.c.footprint.net.
-    - web.telepizza.es - 213.192.228.126
-    - crm.telepizza.es - sys.emailmanager.com.
-    - cms.telepizza.es - 213.192.228.100
-    - app.telepizza.es - app.emailmanager.com.
-    - tv.telepizza.es - 213.192.228.101
-    - docs.telepizza.es - 213.192.228.103
-    - correo.telepizza.es - 213.192.247.252
-    - content.telepizza.es - 213.192.228.126
-    - lab.telepizza.es - 213.192.228.101
-    Output file 'telepizza.es.csv' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: O
+    12 hosts were found with the bruteforce attack!
+    - www.cocacola.es - cocacola.es. (CNAME)
+    - www.cocacola.es - 216.35.169.5 (A) - Chesterfield, Missouri, United States 
+    - blog.cocacola.es - weblogs.edgesuite.net. (CNAME)
+    - secure.cocacola.es - 216.35.169.5 (A) - Chesterfield, Missouri, United States 
+    - static.cocacola.es - 216.35.169.5 (A) - Chesterfield, Missouri, United States 
+    - api.cocacola.es - 216.35.169.5 (A) - Chesterfield, Missouri, United States 
+    - download.cocacola.es - 216.35.169.5 (A) - Chesterfield, Missouri, United States 
+    - info.cocacola.es - 82.144.108.216 (A) - Spain 
+    - docs.cocacola.es - 82.144.108.202 (A) - Spain 
+    - videos.cocacola.es - cocacola-genetsis.kewego.es. (CNAME)
+    - auth.cocacola.es - 216.64.209.121 (A) - Chesterfield, Missouri, United States 
+    - register.cocacola.es - 216.35.169.4 (A) - Chesterfield, Missouri, United States 
+    
+    Output file 'cocacola.es.csv' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: O
     Overwriting file...
 
 ```

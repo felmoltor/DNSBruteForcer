@@ -1,8 +1,10 @@
 require 'net/dns'
+require 'open-uri'
+require 'json'
 
 class DNSBruteForcer
   
-  attr_accessor :dictionary, :domain
+  attr_accessor :dictionary, :domain, :geodetails
   attr_reader :dnsips
   
   
@@ -14,6 +16,7 @@ class DNSBruteForcer
     @dictionary = nil
     @domain = nil
     @nsrecords = [] # each record will have the form {:hostname => name, :ip => ip, :type => CNAME/A}
+    @geodetails = false
   end
   
   ###################
@@ -161,8 +164,25 @@ class DNSBruteForcer
   
   ###################
   
+  def getGeoDetails(ip)
+    # If this is an IP checkit
+    if /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/.match(ip.to_s)
+      response = open("http://freegeoip.net/json/#{ip.to_s}")
+      if !response.nil?
+        geojson = response.readlines()
+        j = JSON.parse(geojson[0])
+        return j
+      end
+    end
+    
+    return nil
+  end
+  
+  ###################
+  
   def bruteforceSubdomainsWithDNS(dns,domain)
     foundhosts = []
+    geo = nil
     targetdns = Net::DNS::Resolver.new(:nameservers => dns, :searchlist=>[],:domain=>[],:udp_timeout=>15)
     File.open(@dictionary,"r").each{|subdomain|
       targeth = "#{subdomain.chomp}.#{domain}"
@@ -179,7 +199,10 @@ class DNSBruteForcer
             else
               addr = record.cname
             end
-            foundhosts << {:name => targeth, :ip => addr, :type => record.type}
+            if (@geodetails)
+              geo = getGeoDetails(addr)
+            end
+            foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo}
           }
         end
       rescue Net::DNS::Resolver::NoResponseError

@@ -14,6 +14,7 @@ def parseOptions()
     :domain => nil,
     :dictionary => nil,
     :dns => nil,
+    :geoinfo => nil,
     :outputfile => nil
   }
   optparse = OptionParser.new do |opts|   
@@ -28,6 +29,9 @@ def parseOptions()
     end
     opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
       options[:dns] = dns
+    end
+    opts.on( '-g', '--geo-info', 'Get also the geographic information of the host from freegeoip.net' ) do
+      options[:geoinfo] = true
     end
     opts.on( '-o', '--output [OFILE]', 'Save the summary of the execution to this CSV file' ) do |ofile|
       options[:outputfile] = ofile
@@ -79,9 +83,16 @@ end
 
 def saveOutputCSV(ofile, foundhosts)
   f = File.open(ofile,"w")
-  f.puts("hostname;address;type")
+  f.puts("hostname;address;type;Geo. Info.")
   foundhosts.each{|h|
-    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]}" 
+    geoinfo = ""
+    if !h[:geo].nil?
+      geoinfo += "#{h[:geo]["city"]}, " if !h[:geo]["city"].nil? and h[:geo]["city"].size > 0
+      geoinfo += "#{h[:geo]["region_name"]}, " if !h[:geo]["city"].nil? and h[:geo]["region_name"].size > 0
+      geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["city"].nil? and h[:geo]["country_name"].size > 0
+      geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and h[:geo]["latitude"] > 0 and !h[:geo]["longitude"].nil? and h[:geo]["longitude"] > 0
+    end
+    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo}" 
   }
   f.close
 end
@@ -112,6 +123,7 @@ printBanner()
 op = parseOptions()
 
 dnsb = DNSBruteForcer.new()
+dnsb.geodetails = op[:geoinfo]
 auths = dnsb.getAuthDNSServers(op[:domain])
 puts "The authoritative servers of #{op[:domain]} are: "
 auths.each{|s|
@@ -145,7 +157,15 @@ else
         if !hosts.nil? and hosts.size > 0
           puts "#{hosts.size} hosts were found with the bruteforce attack!".green
           hosts.each {|h|
-            puts "- #{h[:name]} - #{h[:ip].to_s} (#{h[:type]})"  
+            print "- #{h[:name]} - #{h[:ip].to_s} (#{h[:type]})"
+            if op[:geoinfo] and !h[:geo].nil?
+              print " - "
+              print "#{h[:geo]["city"]}, " if !h[:geo]["city"].nil? and h[:geo]["city"].size > 0
+              print "#{h[:geo]["region_name"]}, " if !h[:geo]["city"].nil? and h[:geo]["region_name"].size > 0
+              print "#{h[:geo]["country_name"]} "  if !h[:geo]["city"].nil? and h[:geo]["country_name"].size > 0
+              print "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and h[:geo]["latitude"] > 0 and !h[:geo]["longitude"].nil? and h[:geo]["longitude"] > 0
+            end
+            puts ""  
           }
         else
           puts "No hosts were found with the bruteforce attack :-(".red
