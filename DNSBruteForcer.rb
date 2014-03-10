@@ -13,6 +13,7 @@ class DNSBruteForcer
     @dnsips = @dnsserver.nameservers
     @dictionary = nil
     @domain = nil
+    @nsrecords = [] # each record will have the form {:hostname => name, :ip => ip, :type => CNAME/A}
   end
   
   ###################
@@ -167,16 +168,25 @@ class DNSBruteForcer
       targeth = "#{subdomain.chomp}.#{domain}"
       begin 
         response = targetdns.query(targeth)
+        # Type of the response is tp.answer[0].class
+        # Address of the response is  tp.answer[0].address
+        # Hostname tp.answer[0].name
         if response.header.rCode.type == "NoError"
           response.answer.each {|record|
-            foundhosts << targeth
+            addr = ""
+            if record.type == "A"
+              addr = record.address
+            else
+              addr = record.cname
+            end
+            foundhosts << {:name => targeth, :ip => addr, :type => record.type}
           }
         end
       rescue Net::DNS::Resolver::NoResponseError
         $stderr.puts "DNS server '#{dns}' did not respond to our query..."
       end
     }
-    return foundhosts.uniq!
+    return foundhosts
   end
   
   ###################
@@ -191,7 +201,9 @@ class DNSBruteForcer
       if !nsservers.nil? and nsservers.size > 0
         if alldns
           nsservers.each{|dnsip|
-            foundhosts = bruteforceSubdomainsWithDNS(dnsip,domain)
+            bruteforceSubdomainsWithDNS(dnsip,domain).each {|record|
+              foundhosts << record
+            }
           }
         else # Ask only to the first DNS
           dnsip = nsservers[0]
@@ -205,7 +217,9 @@ class DNSBruteForcer
         if !soaserver.nil? and soaserver.size > 0
           if alldns
             soaserver.each{|soaip|
-              foundhosts = bruteforceSubdomainsWithDNS(soaip,domain)
+              bruteforceSubdomainsWithDNS(soaip,domain).each { |record|
+                foundhosts << record
+              }
             }
           else # Ask only to the first DNS
             soaip = soaserver[0]

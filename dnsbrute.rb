@@ -48,6 +48,45 @@ def parseOptions()
   return options
 end
 
+##########################
+
+def avoidOverwritingOutput(ofile)
+  if File.exists?(ofile)
+    while 1 # Only finish when there is a correct choice
+      print "Output file '#{ofile}' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: "
+      c = gets.chomp.upcase
+      case c
+      when "O"
+        puts "Overwriting file..."
+        return ofile
+      when "S"
+        puts "Skipping the save output phase... "
+        return nil
+      when "R"
+        print "Please, provide the new name for the output file: "
+        newname = gets.chomp
+        return newname
+      end
+    end    
+  else
+    return ofile
+  end
+end
+
+
+  
+###################
+
+def saveOutputCSV(ofile, foundhosts)
+  f = File.open(ofile,"w")
+  f.puts("hostname;address;type")
+  foundhosts.each{|h|
+    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]}" 
+  }
+  f.close
+end
+
+
 ############
 
 def printBanner()
@@ -106,7 +145,7 @@ else
         if !hosts.nil? and hosts.size > 0
           puts "#{hosts.size} hosts were found with the bruteforce attack!".green
           hosts.each {|h|
-            puts "- #{h}"  
+            puts "- #{h[:name]} - #{h[:ip].to_s} (#{h[:type]})"  
           }
         else
           puts "No hosts were found with the bruteforce attack :-(".red
@@ -114,4 +153,10 @@ else
     else
         puts "Dictionary file #{op[:dictionary]} couldn't be found. Skipping bruteforce attack..."
     end
+end
+
+# Save results into outfile
+if !op[:outputfile].nil?
+  of = avoidOverwritingOutput(op[:outputfile])
+  saveOutputCSV(of,hosts)
 end
