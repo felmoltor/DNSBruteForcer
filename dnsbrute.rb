@@ -90,7 +90,7 @@ def saveOutputCSV(ofile, foundhosts)
       geoinfo += "#{h[:geo]["city"]}, " if !h[:geo]["city"].nil? and h[:geo]["city"].size > 0
       geoinfo += "#{h[:geo]["region_name"]}, " if !h[:geo]["city"].nil? and h[:geo]["region_name"].size > 0
       geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["city"].nil? and h[:geo]["country_name"].size > 0
-      geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and h[:geo]["latitude"] > 0 and !h[:geo]["longitude"].nil? and h[:geo]["longitude"] > 0
+      geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
     end
     f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo}" 
   }
@@ -163,7 +163,7 @@ else
               print "#{h[:geo]["city"]}, " if !h[:geo]["city"].nil? and h[:geo]["city"].size > 0
               print "#{h[:geo]["region_name"]}, " if !h[:geo]["city"].nil? and h[:geo]["region_name"].size > 0
               print "#{h[:geo]["country_name"]} "  if !h[:geo]["city"].nil? and h[:geo]["country_name"].size > 0
-              print "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and h[:geo]["latitude"] > 0 and !h[:geo]["longitude"].nil? and h[:geo]["longitude"] > 0
+              print "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
             end
             puts ""  
           }
