@@ -128,7 +128,7 @@ def printBanner()
     ###########################
     #                         #
     #    DNS Brute Forcer     # 
-    #      Version: 0.2       #
+    #      Version: 0.3       #
     #  Author: Felipe Molina  #
     #   Twitter: @felmoltor   #
     #                         #
@@ -144,10 +144,10 @@ def createFolders()
     Dir.mkdir("outputs")
   end
   if !Dir.exist?("outputs/csv")
-    Dir.mkdir("outpus/csv")
+    Dir.mkdir("outputs/csv")
   end
   if !Dir.exist?("outputs/maps")
-    Dir.mkdir("outpus/maps")
+    Dir.mkdir("outputs/maps")
   end
 end
 

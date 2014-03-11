@@ -12,7 +12,6 @@ Usage: ./dnsbrute.rb [OPTIONS]
     -D, --dictionary FILE            Dicionary file containing the list of subdomains to check
     -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
     -g, --geo-info                   Get also the geographic information of the host from freegeoip.net
-    -o, --output [OFILE]             Save the summary of the execution to this CSV file
     -h, --help                       Help screen
 ```
 
@@ -25,7 +24,7 @@ felmoltor@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb --geo-info -d cocacola.es -
     ###########################
     #                         #
     #    DNS Brute Forcer     # 
-    #      Version: 0.2       #
+    #      Version: 0.3       #
     #  Author: Felipe Molina  #
     #   Twitter: @felmoltor   #
     #                         #

@@ -1,2 +1,4 @@
 *.csv
 .project
+outputs/csv/*.csv
+outputs/kml/*.kml
