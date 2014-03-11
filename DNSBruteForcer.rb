@@ -4,7 +4,7 @@ require 'json'
 
 class DNSBruteForcer
   
-  attr_accessor :dictionary, :domain, :geodetails
+  attr_accessor :dictionary, :domain, :geodetails, :threads
   attr_reader :dnsips
   
   
@@ -15,6 +15,7 @@ class DNSBruteForcer
     @dnsips = @dnsserver.nameservers
     @dictionary = nil
     @domain = nil
+    @threads = 1
     @nsrecords = [] # each record will have the form {:hostname => name, :ip => ip, :type => CNAME/A}
     @geodetails = false
   end

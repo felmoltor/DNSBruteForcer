@@ -137,11 +137,25 @@ def printBanner()
   puts banner.cyan
 end
 
+############
+
+def createFolders()
+  if !Dir.exists?("outputs")
+    Dir.mkdir("outputs")
+  end
+  if !Dir.exist?("outputs/csv")
+    Dir.mkdir("outpus/csv")
+  end
+  if !Dir.exist?("outputs/maps")
+    Dir.mkdir("outpus/maps")
+  end
+end
+
 ########
 # MAIN #
 ########
 
-
+createFolders()
 printBanner()
 op = parseOptions()
 
