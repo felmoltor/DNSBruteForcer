@@ -4,6 +4,7 @@
 require 'pp'
 require 'optparse'
 require 'colorize'
+require 'nokogiri'
 require_relative 'DNSBruteForcer'
 
 
@@ -14,8 +15,7 @@ def parseOptions()
     :domain => nil,
     :dictionary => nil,
     :dns => nil,
-    :geoinfo => nil,
-    :outputfile => nil
+    :geoinfo => nil
   }
   optparse = OptionParser.new do |opts|   
     
@@ -33,9 +33,6 @@ def parseOptions()
     opts.on( '-g', '--geo-info', 'Get also the geographic information of the host from freegeoip.net' ) do
       options[:geoinfo] = true
     end
-    opts.on( '-o', '--output [OFILE]', 'Save the summary of the execution to this CSV file' ) do |ofile|
-      options[:outputfile] = ofile
-    end
     opts.on( '-h', '--help', 'Help screen' ) do
       puts optparse
       exit
@@ -50,6 +47,32 @@ def parseOptions()
   end
   
   return options
+end
+
+##########################
+
+def saveOutputKML(ofile,foundhosts)
+  oxml = File.open("maps/#{ofile}.kml","w")
+  builder = Nokogiri::XML::Builder.new do |xml|
+    xml.kml('xmlns' => "http://earth.google.com/kml/2.2") {
+      xml.Document{
+        xml.name "#{ofile}.kml"
+          foundhosts.each{|h|
+          if !h[:geo].nil?
+            xml.Placemark {
+              xml.name "#{h[:name]} - #{h[:ip]}"  
+              xml.description "#{h[:name]} - #{h[:ip]}. Record type: #{h[:type]} \n Location: #{h[:geo]["city"]}, #{h[:geo]["region_name"]}, #{h[:geo]["country_name"]} \n Whois: "
+              xml.Point {
+                xml.coordinates "#{h[:geo]["longitude"].to_f},#{h[:geo]["latitude"].to_f},0.0"
+              }
+            }
+          end
+        }
+      }
+    }
+  end
+  oxml.puts builder.to_xml
+  oxml.close
 end
 
 ##########################
@@ -88,8 +111,8 @@ def saveOutputCSV(ofile, foundhosts)
     geoinfo = ""
     if !h[:geo].nil?
       geoinfo += "#{h[:geo]["city"]}, " if !h[:geo]["city"].nil? and h[:geo]["city"].size > 0
-      geoinfo += "#{h[:geo]["region_name"]}, " if !h[:geo]["city"].nil? and h[:geo]["region_name"].size > 0
-      geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["city"].nil? and h[:geo]["country_name"].size > 0
+      geoinfo += "#{h[:geo]["region_name"]}, " if !h[:geo]["region_name"].nil? and h[:geo]["region_name"].size > 0
+      geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["country_name"].nil? and h[:geo]["country_name"].size > 0
       geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
     end
     f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo}" 
@@ -176,7 +199,16 @@ else
 end
 
 # Save results into outfile
-if !op[:outputfile].nil?
-  of = avoidOverwritingOutput(op[:outputfile])
-  saveOutputCSV(of,hosts)
+csvname = "outputs/csv/#{op[:domain].gsub("/","_").gsub(":","_")}.csv"
+kmlname = "outputs/maps/#{op[:domain].gsub("/","_").gsub(":","_")}.kml"
+
+ofc = avoidOverwritingOutput(csvname)
+if !of.nil?
+  saveOutputCSV(ofc,hosts)
+  puts "Results were saved in '#{ofc}'."
+end
+ofk = avoidOverwritingOutput(kmlname)
+if !of.nil?
+  saveOutputCSV(ofk,hosts)
+  puts "Maps were saved in '#{ofk}'."
 end
