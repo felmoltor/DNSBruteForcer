@@ -52,11 +52,11 @@ end
 ##########################
 
 def saveOutputKML(ofile,foundhosts)
-  oxml = File.open("maps/#{ofile}.kml","w")
+  oxml = File.open(ofile,"w")
   builder = Nokogiri::XML::Builder.new do |xml|
     xml.kml('xmlns' => "http://earth.google.com/kml/2.2") {
       xml.Document{
-        xml.name "#{ofile}.kml"
+        xml.name "#{ofile}"
           foundhosts.each{|h|
           if !h[:geo].nil?
             xml.Placemark {
@@ -203,12 +203,12 @@ csvname = "outputs/csv/#{op[:domain].gsub("/","_").gsub(":","_")}.csv"
 kmlname = "outputs/maps/#{op[:domain].gsub("/","_").gsub(":","_")}.kml"
 
 ofc = avoidOverwritingOutput(csvname)
-if !of.nil?
+if !ofc.nil?
   saveOutputCSV(ofc,hosts)
   puts "Results were saved in '#{ofc}'."
 end
 ofk = avoidOverwritingOutput(kmlname)
-if !of.nil?
-  saveOutputCSV(ofk,hosts)
+if !ofk.nil?
+  saveOutputKML(ofk,hosts)
   puts "Maps were saved in '#{ofk}'."
 end
