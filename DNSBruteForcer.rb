@@ -15,7 +15,7 @@ class DNSBruteForcer
     @dnsips = @dnsserver.nameservers
     @dictionary = nil
     @domain = nil
-    @threads = 1
+    @threads = 5
     @nsrecords = [] # each record will have the form {:hostname => name, :ip => ip, :type => CNAME/A}
     @geodetails = false
   end
@@ -181,34 +181,60 @@ class DNSBruteForcer
   
   ###################
   
+  def splitDictionary()
+    nlines = %x(wc -l < #{@dictionary}).chomp.to_i
+    words_for_threads = []
+    
+    File.open(@dictionary,"r").each.with_index {|subdomain,i|
+      if words_for_threads[i.to_i%@threads.to_i].nil?
+        words_for_threads[i.to_i%@threads.to_i] = []
+      end
+      words_for_threads[i%@threads.to_i] << subdomain 
+    }
+    
+    return words_for_threads
+  end
+  
+  ###################
+  
   def bruteforceSubdomainsWithDNS(dns,domain)
     foundhosts = []
     geo = nil
     targetdns = Net::DNS::Resolver.new(:nameservers => dns, :searchlist=>[],:domain=>[],:udp_timeout=>15)
-    File.open(@dictionary,"r").each{|subdomain|
-      targeth = "#{subdomain.chomp}.#{domain}"
-      begin 
-        response = targetdns.query(targeth)
-        # Type of the response is tp.answer[0].class
-        # Address of the response is  tp.answer[0].address
-        # Hostname tp.answer[0].name
-        if response.header.rCode.type == "NoError"
-          response.answer.each {|record|
-            addr = ""
-            if record.type == "A"
-              addr = record.address
-            else
-              addr = record.cname
+    
+    # Split the dictionary in parts for the threads
+    words_for_threads = splitDictionary()
+    words_for_threads.each{|words|
+      t = Thread.new {
+        # each thread ask for a subset of the dictionary
+        words.each { |subdomain|
+          targeth = "#{subdomain.chomp}.#{domain}"
+          begin 
+            response = targetdns.query(targeth)
+            # Type of the response is tp.answer[0].class
+            # Address of the response is  tp.answer[0].address
+            # Hostname tp.answer[0].name
+            if response.header.rCode.type == "NoError"
+              response.answer.each {|record|
+                addr = ""
+                if record.type == "A"
+                  addr = record.address
+                else
+                  addr = record.cname
+                end
+                if (@geodetails)
+                  geo = getGeoDetails(addr)
+                end
+                foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo}
+              }
             end
-            if (@geodetails)
-              geo = getGeoDetails(addr)
-            end
-            foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo}
-          }
-        end
-      rescue Net::DNS::Resolver::NoResponseError
-        $stderr.puts "DNS server '#{dns}' did not respond to our query..."
-      end
+          rescue Net::DNS::Resolver::NoResponseError
+            $stderr.puts "DNS server '#{dns}' did not respond to our query..."
+          end
+        }        
+      }
+      t.abort_on_exception = true #¿?
+      t.join
     }
     return foundhosts
   end

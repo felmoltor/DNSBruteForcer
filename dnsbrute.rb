@@ -15,7 +15,8 @@ def parseOptions()
     :domain => nil,
     :dictionary => nil,
     :dns => nil,
-    :geoinfo => nil
+    :geoinfo => nil,
+    :nthreads => 5
   }
   optparse = OptionParser.new do |opts|   
     
@@ -27,11 +28,14 @@ def parseOptions()
     opts.on( '-D', '--dictionary FILE', String, "Dicionary file containing the list of subdomains to check" ) do |dictionary|
       options[:dictionary] = dictionary
     end
-    opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
-      options[:dns] = dns
+    opts.on( '-t', '--threads [NTHREADS]', 'Number of threads used to ask DNS servers in bruteforce attack [Default: 5]' ) do |nthreads|
+      options[:nthreads] = nthreads
     end
     opts.on( '-g', '--geo-info', 'Get also the geographic information of the host from freegeoip.net' ) do
       options[:geoinfo] = true
+    end
+    opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
+      options[:dns] = dns
     end
     opts.on( '-h', '--help', 'Help screen' ) do
       puts optparse
@@ -161,6 +165,7 @@ op = parseOptions()
 
 dnsb = DNSBruteForcer.new()
 dnsb.geodetails = op[:geoinfo]
+dnsb.threads = op[:nthreads]
 auths = dnsb.getAuthDNSServers(op[:domain])
 puts "The authoritative servers of #{op[:domain]} are: "
 auths.each{|s|
