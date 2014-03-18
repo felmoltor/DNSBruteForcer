@@ -61,15 +61,25 @@ end
 
 def saveOutputKML(ofile,foundhosts)
   oxml = File.open(ofile,"w")
-  builder = Nokogiri::XML::Builder.new do |xml|
+  
+  builder = Nokogiri::XML::Builder.new {|xml|
     xml.kml('xmlns' => "http://earth.google.com/kml/2.2") {
       xml.Document{
         xml.name "#{ofile}"
-          foundhosts.each{|h|
+        foundhosts.each {|h|
           if !h[:geo].nil?
             xml.Placemark {
               xml.name "#{h[:name]} - #{h[:ip]}"  
-              xml.description "#{h[:name]} - #{h[:ip]}. \n Record type: #{h[:type]} \n Location: #{h[:geo]["city"]}, #{h[:geo]["region_name"]}, #{h[:geo]["country_name"]}"
+              whois = h[:whois].gsub("\n","<br/>")
+              xml.description """
+                #{h[:name]} - #{h[:ip]}.<br/> 
+                Record type: #{h[:type]}<br/>
+                Location: #{h[:geo]["city"]}, #{h[:geo]["region_name"]}, #{h[:geo]["country_name"]}<br/> 
+                <br/>
+                ==================
+                <br/>
+                #{whois}<br/>
+                """
               xml.Point {
                 xml.coordinates "#{h[:geo]["longitude"].to_f},#{h[:geo]["latitude"].to_f},0.0"
               }
@@ -78,7 +88,7 @@ def saveOutputKML(ofile,foundhosts)
         }
       }
     }
-  end
+  }
   oxml.puts builder.to_xml
   oxml.close
 end
@@ -169,7 +179,7 @@ op = parseOptions()
 
 dnsb = DNSBruteForcer.new()
 dnsb.geodetails = op[:geoinfo]
-dnsb.threads = op[:whois]
+dnsb.whois = op[:whois]
 dnsb.threads = op[:nthreads]
 auths = dnsb.getAuthDNSServers(op[:domain])
 puts "The authoritative servers of #{op[:domain]} are: "

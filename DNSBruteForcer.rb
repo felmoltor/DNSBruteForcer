@@ -233,17 +233,21 @@ class DNSBruteForcer
               response.answer.each {|record|
                 whois = ""
                 addr = ""
-                if record.type == "A"
-                  if (@whois)
-                    whois = getWhoisInfo(targeth)
-                  end
-                  if (@geodetails)
-                    geo = getGeoDetails(addr)
-                  end                  
+                if record.type == "A"        
                   addr = record.address
                 else
                   addr = record.cname
                 end
+                
+                if (@whois)
+                  puts "Retrieving whois information of '#{targeth}'"
+                  whois = getWhoisInfo(targeth)
+                end      
+                if (@geodetails)
+                  puts "Retrieving geographic information of '#{addr}'"
+                  geo = getGeoDetails(addr)
+                end    
+                
                 foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo, :whois => whois}
               }
             end
