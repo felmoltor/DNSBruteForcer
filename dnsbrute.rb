@@ -242,8 +242,11 @@ if !ofc.nil?
   saveOutputCSV(ofc,hosts)
   puts "Results were saved in '#{ofc}'."
 end
-ofk = avoidOverwritingOutput(kmlname)
-if !ofk.nil?
-  saveOutputKML(ofk,hosts)
-  puts "Maps were saved in '#{ofk}'."
-end
+# If no geographic data is requested by the user dont create the map file
+if op[:geoinfo]
+  ofk = avoidOverwritingOutput(kmlname)
+  if !ofk.nil?
+    saveOutputKML(ofk,hosts)
+    puts "Maps were saved in '#{ofk}'."
+  end
+end  
