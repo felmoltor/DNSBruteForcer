@@ -1,10 +1,11 @@
 require 'net/dns'
 require 'open-uri'
 require 'json'
+require 'whois'
 
 class DNSBruteForcer
   
-  attr_accessor :dictionary, :domain, :geodetails, :threads
+  attr_accessor :dictionary, :domain, :geodetails, :threads, :whois
   attr_reader :dnsips
   
   
@@ -18,6 +19,8 @@ class DNSBruteForcer
     @threads = 5
     @nsrecords = [] # each record will have the form {:hostname => name, :ip => ip, :type => CNAME/A}
     @geodetails = false
+    @whois = false
+    @w = Whois::Client.new
   end
   
   ###################
@@ -25,6 +28,18 @@ class DNSBruteForcer
   def setNameServers(nameservers)
     @dnsserver = Net::DNS::Resolver.new(:nameservers => nameservers, :searchlist=>[],:domain=>[],:udp_timeout=>15)
     @dnsips = @dnsserver.nameservers
+  end
+  
+  ###################
+  
+  def getWhoisInfo(host)
+    begin
+      r = @w.lookup(host)
+      return r.to_s
+    rescue Exception => e
+      $stderr.puts "There was an error requesting whois info for #{host}"
+      return ""
+    end
   end
   
   ###################
@@ -216,16 +231,20 @@ class DNSBruteForcer
             # Hostname tp.answer[0].name
             if response.header.rCode.type == "NoError"
               response.answer.each {|record|
+                whois = ""
                 addr = ""
                 if record.type == "A"
+                  if (@whois)
+                    whois = getWhoisInfo(targeth)
+                  end
+                  if (@geodetails)
+                    geo = getGeoDetails(addr)
+                  end                  
                   addr = record.address
                 else
                   addr = record.cname
                 end
-                if (@geodetails)
-                  geo = getGeoDetails(addr)
-                end
-                foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo}
+                foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo, :whois => whois}
               }
             end
           rescue Net::DNS::Resolver::NoResponseError

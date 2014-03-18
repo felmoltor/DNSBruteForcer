@@ -15,14 +15,15 @@ def parseOptions()
     :domain => nil,
     :dictionary => nil,
     :dns => nil,
-    :geoinfo => nil,
+    :geoinfo => false,
+    :whois => false,
     :nthreads => 5
   }
   optparse = OptionParser.new do |opts|   
     
     opts.banner = "Usage: #{__FILE__} [OPTIONS]"
      
-    opts.on( '-d', '--domain DOMAIN', String, "Domain to explore for robots.txt (This option needs program 'theharvester' in your PATH)" ) do |domain|
+    opts.on( '-d', '--domain DOMAIN', String, "Domain to explore for hosts by bruteforce." ) do |domain|
       options[:domain] = domain
     end
     opts.on( '-D', '--dictionary FILE', String, "Dicionary file containing the list of subdomains to check" ) do |dictionary|
@@ -33,6 +34,9 @@ def parseOptions()
     end
     opts.on( '-g', '--geo-info', 'Get also the geographic information of the host from freegeoip.net' ) do
       options[:geoinfo] = true
+    end
+    opts.on( '-w', '--whois', 'Get also the whois information of every hostname found' ) do
+      options[:whois] = true
     end
     opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
       options[:dns] = dns
@@ -65,7 +69,7 @@ def saveOutputKML(ofile,foundhosts)
           if !h[:geo].nil?
             xml.Placemark {
               xml.name "#{h[:name]} - #{h[:ip]}"  
-              xml.description "#{h[:name]} - #{h[:ip]}. Record type: #{h[:type]} \n Location: #{h[:geo]["city"]}, #{h[:geo]["region_name"]}, #{h[:geo]["country_name"]} \n Whois: "
+              xml.description "#{h[:name]} - #{h[:ip]}. \n Record type: #{h[:type]} \n Location: #{h[:geo]["city"]}, #{h[:geo]["region_name"]}, #{h[:geo]["country_name"]}"
               xml.Point {
                 xml.coordinates "#{h[:geo]["longitude"].to_f},#{h[:geo]["latitude"].to_f},0.0"
               }
@@ -165,6 +169,7 @@ op = parseOptions()
 
 dnsb = DNSBruteForcer.new()
 dnsb.geodetails = op[:geoinfo]
+dnsb.threads = op[:whois]
 dnsb.threads = op[:nthreads]
 auths = dnsb.getAuthDNSServers(op[:domain])
 puts "The authoritative servers of #{op[:domain]} are: "
