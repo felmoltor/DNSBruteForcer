@@ -8,10 +8,12 @@ Usage
 
 ```
 Usage: ./dnsbrute.rb [OPTIONS]
-    -d, --domain DOMAIN              Domain to explore for robots.txt (This option needs program 'theharvester' in your PATH)
+    -d, --domain DOMAIN              Domain to explore for hosts by bruteforce.
     -D, --dictionary FILE            Dicionary file containing the list of subdomains to check
-    -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
+    -t, --threads [NTHREADS]         Number of threads used to ask DNS servers in bruteforce attack [Default: 5]
     -g, --geo-info                   Get also the geographic information of the host from freegeoip.net
+    -w, --whois                      Get also the whois information of every hostname found
+    -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
     -h, --help                       Help screen
 ```
 
@@ -19,76 +21,93 @@ Output example
 --------------
 
 ```
-	harvester@kali:~/Tools/DNSBruteForcer$ ./dnsbrute.rb -d ujaen.es -D dictionaries/subdomains-top1mil-500.txt --geo-info 
-	
 	    ###########################
 	    #                         #
 	    #    DNS Brute Forcer     # 
-	    #      Version: 0.3       #
+	    #      Version: 0.4       #
 	    #  Author: Felipe Molina  #
 	    #   Twitter: @felmoltor   #
 	    #                         #
 	    ###########################
 	
-	The authoritative servers of ujaen.es are: 
-	- 150.214.170.15
-	The name servers of ujaen.es are:
-	- 150.214.170.21
-	- 150.214.170.22
-	- 150.214.5.83
-	- 150.214.170.15
-	- 130.206.1.2
-	- 130.206.1.3
-	- 150.214.4.35
-	Forcing the enumeration against domain nameservers (150.214.170.21, 150.214.170.22, 150.214.5.83, 150.214.170.15, 130.206.1.2, 130.206.1.3, 150.214.4.35).
+	The authoritative servers of feedly.com are: 
+	- 173.246.97.2
+	The name servers of feedly.com are:
+	- 217.70.182.20
+	- 217.70.184.40
+	- 173.246.97.2
+	Forcing the enumeration against domain nameservers (217.70.182.20, 217.70.184.40, 173.246.97.2).
 	Zone transfer is not allowed in any of it's NS.
 	Starting bruteforce scan. Please be patient...
-	44 hosts were found with the bruteforce attack!
-	- www.ujaen.es - sabiote.ujaen.es. (CNAME)
-	- www.ujaen.es - 150.214.170.105 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- ftp.ujaen.es - 150.214.170.29 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- webmail.ujaen.es - 150.214.170.14 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- smtp.ujaen.es - 150.214.170.9 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- m.ujaen.es - www10.ujaen.es. (CNAME)
-	- m.ujaen.es - 150.214.170.145 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- pop3.ujaen.es - 150.214.170.44 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- vpn.ujaen.es - 150.214.100.200 (A) - Sevilla, Andalucia, Spain (Lat.: 37.3824, Long.: -5.9761)
-	- imap.ujaen.es - 150.214.170.44 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- dns2.ujaen.es - 150.214.170.22 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- dns1.ujaen.es - 150.214.170.21 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- portal.ujaen.es - 150.214.170.176 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- video.ujaen.es - 150.214.170.200 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- www3.ujaen.es - scint.ujaen.es. (CNAME)
-	- www3.ujaen.es - 150.214.170.56 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- cms.ujaen.es - www10.ujaen.es. (CNAME)
-	- cms.ujaen.es - 150.214.170.145 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- proxy.ujaen.es - 150.214.170.14 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- ftp2.ujaen.es - fatfile.ujaen.es. (CNAME)
-	- ftp2.ujaen.es - 150.214.170.32 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- web1.ujaen.es - pcred06-vm.ujaen.es. (CNAME)
-	- web1.ujaen.es - 150.214.170.116 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- web2.ujaen.es - pcred06-vm.ujaen.es. (CNAME)
-	- web2.ujaen.es - 150.214.170.116 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- blogs.ujaen.es - 150.214.170.181 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- relay.ujaen.es - 150.214.170.33 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- relay.ujaen.es - 150.214.170.17 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- www4.ujaen.es - 150.214.170.250 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- tv.ujaen.es - xserv1.ujaen.es. (CNAME)
-	- tv.ujaen.es - 150.214.174.158 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- ldap.ujaen.es - 150.214.170.120 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- correo.ujaen.es - sabiote.ujaen.es. (CNAME)
-	- correo.ujaen.es - 150.214.170.105 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- vpn2.ujaen.es - 150.214.100.50 (A) - Sevilla, Andalucia, Spain (Lat.: 37.3824, Long.: -5.9761)
-	- www5.ujaen.es - pcredes.ujaen.es. (CNAME)
-	- www5.ujaen.es - 150.214.170.5 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- www6.ujaen.es - yelmo.ujaen.es. (CNAME)
-	- www6.ujaen.es - 150.214.170.36 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- orion.ujaen.es - 150.214.170.134 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- faq.ujaen.es - blogs.ujaen.es. (CNAME)
-	- faq.ujaen.es - 150.214.170.181 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	- idp.ujaen.es - posada3.ujaen.es. (CNAME)
-	- idp.ujaen.es - 150.214.170.193 (A) - Jaén, Andalucia, Spain (Lat.: 37.7724, Long.: -3.7901)
-	Results were saved in 'outputs/csv/ujaen.es.csv'.
-Maps were saved in 'outputs/maps/ujaen.es.kml'.
+	Retrieving whois information of 'www.feedly.com'
+	Retrieving geographic information of '65.19.138.1'
+	Retrieving whois information of 'www.feedly.com'
+	Retrieving geographic information of '65.19.138.2'
+	Retrieving whois information of 'test.feedly.com'
+	Retrieving geographic information of '216.218.207.141'
+	Retrieving whois information of 'img.feedly.com'
+	Retrieving geographic information of 'ghs.google.com.'
+	Retrieving whois information of 'www3.feedly.com'
+	Retrieving geographic information of 'www2.feedly.com.'
+	Retrieving whois information of 'www3.feedly.com'
+	Retrieving geographic information of 'ghs.google.com.'
+	Retrieving whois information of 'search.feedly.com'
+	Retrieving geographic information of 'www.feedly.com.'
+	Retrieving whois information of 'search.feedly.com'
+	Retrieving geographic information of 'www.feedly.com.'
+	Retrieving whois information of 'search.feedly.com'
+	Retrieving geographic information of '65.19.138.2'
+	Retrieving whois information of 'search.feedly.com'
+	Retrieving geographic information of '65.19.138.1'
+	Retrieving whois information of 'mail.feedly.com'
+	Retrieving geographic information of 'ghs.google.com.'
+	Retrieving whois information of 'm.feedly.com'
+	Retrieving geographic information of '216.218.207.140'
+	Retrieving whois information of 'static.feedly.com'
+	Retrieving geographic information of '66.160.192.51'
+	Retrieving whois information of 'email.feedly.com'
+	Retrieving geographic information of 'sendgrid.net.'
+	Retrieving whois information of 'blog.feedly.com'
+	Retrieving geographic information of 'devhd.wordpress.com.'
+	Retrieving whois information of 'beta.feedly.com'
+	Retrieving geographic information of '216.218.207.141'
+	Retrieving whois information of 'images.feedly.com'
+	Retrieving geographic information of 'ghs.googlehosted.com.'
+	Retrieving whois information of 'dev.feedly.com'
+	Retrieving geographic information of '10.0.1.8'
+	Retrieving whois information of 'proxy.feedly.com'
+	Retrieving geographic information of 'ghs.google.com.'
+	Retrieving whois information of 'www2.feedly.com'
+	Retrieving geographic information of 'ghs.google.com.'
+	Retrieving whois information of 'svn.feedly.com'
+	Retrieving geographic information of '216.218.207.140'
+	21 hosts were found with the bruteforce attack!
+	- www.feedly.com - 65.19.138.1 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- www.feedly.com - 65.19.138.2 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- test.feedly.com - 216.218.207.141 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- img.feedly.com - ghs.google.com. (CNAME)
+	- www3.feedly.com - www2.feedly.com. (CNAME)
+	- www3.feedly.com - ghs.google.com. (CNAME)
+	- search.feedly.com - www.feedly.com. (CNAME)
+	- search.feedly.com - www.feedly.com. (CNAME)
+	- search.feedly.com - 65.19.138.2 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- search.feedly.com - 65.19.138.1 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- mail.feedly.com - ghs.google.com. (CNAME)
+	- m.feedly.com - 216.218.207.140 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- static.feedly.com - 66.160.192.51 (A) - Stayton, Oregon, United States (Lat.: 44.8155, Long.: -122.7292)
+	- email.feedly.com - sendgrid.net. (CNAME)
+	- blog.feedly.com - devhd.wordpress.com. (CNAME)
+	- beta.feedly.com - 216.218.207.141 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	- images.feedly.com - ghs.googlehosted.com. (CNAME)
+	- dev.feedly.com - 10.0.1.8 (A) - Reserved (Lat.: 0, Long.: 0)
+	- proxy.feedly.com - ghs.google.com. (CNAME)
+	- www2.feedly.com - ghs.google.com. (CNAME)
+	- svn.feedly.com - 216.218.207.140 (A) - Fremont, California, United States (Lat.: 37.5155, Long.: -121.8962)
+	Output file 'outputs/csv/feedly.com.csv' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: o
+	Overwriting file...
+	Results were saved in 'outputs/csv/feedly.com.csv'.
+	Output file 'outputs/maps/feedly.com.kml' already exists. What do you want to do? (O)verwrite,(S)kip saving output,(R)ename: o
+	Overwriting file...
+	Maps were saved in 'outputs/maps/feedly.com.kml'.
 
 ```

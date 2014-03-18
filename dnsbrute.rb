@@ -124,7 +124,7 @@ end
 
 def saveOutputCSV(ofile, foundhosts)
   f = File.open(ofile,"w")
-  f.puts("hostname;address;type;Geo. Info.")
+  f.puts("hostname;address;type;Geo. Info.;Whois Info")
   foundhosts.each{|h|
     geoinfo = ""
     if !h[:geo].nil?
@@ -133,7 +133,7 @@ def saveOutputCSV(ofile, foundhosts)
       geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["country_name"].nil? and h[:geo]["country_name"].size > 0
       geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
     end
-    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo}" 
+    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo};#{h[:whois]}" 
   }
   f.close
 end
@@ -146,7 +146,7 @@ def printBanner()
     ###########################
     #                         #
     #    DNS Brute Forcer     # 
-    #      Version: 0.3       #
+    #      Version: 0.4       #
     #  Author: Felipe Molina  #
     #   Twitter: @felmoltor   #
     #                         #
@@ -212,6 +212,7 @@ else
         dnsb.dictionary = op[:dictionary]
         hosts = dnsb.bruteforceSubdomains(op[:domain])
         if !hosts.nil? and hosts.size > 0
+          puts ""
           puts "#{hosts.size} hosts were found with the bruteforce attack!".green
           hosts.each {|h|
             print "- #{h[:name]} - #{h[:ip].to_s} (#{h[:type]})"
