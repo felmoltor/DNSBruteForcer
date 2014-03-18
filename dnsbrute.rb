@@ -133,7 +133,7 @@ def saveOutputCSV(ofile, foundhosts)
       geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["country_name"].nil? and h[:geo]["country_name"].size > 0
       geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
     end
-    f.puts "#{h[:name]};#{h[:ip]};#{h[:type]};#{geoinfo};#{h[:whois]}" 
+    f.puts "\"#{h[:name]}\";\"#{h[:ip]}\";\"#{h[:type]}\";\"#{geoinfo}\";\"#{h[:whois]}\"" 
   }
   f.close
 end

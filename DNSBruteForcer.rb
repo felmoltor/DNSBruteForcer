@@ -187,7 +187,7 @@ class DNSBruteForcer
       # Check if we already have this geographic information in our results
       @foundhosts.each{|h|
         if h[:ip].to_s == ip.to_s and !h[:geo].nil?
-          puts "Ya se ha encontrado anteriormente los detalles de la IP '#{ip}'. Devolvemos esos datos"
+          puts "Geographic data of '#{ip}' has been previously requested to freegeoip.net. Returning local geo data."
           return h[:geo]
         end
       }
@@ -257,7 +257,7 @@ class DNSBruteForcer
                   geo = getGeoDetails(addr)
                 end    
                 
-                foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo, :whois => whois}
+                @foundhosts << {:name => targeth, :ip => addr, :type => record.type, :geo => geo, :whois => whois}
               }
             end
           rescue Net::DNS::Resolver::NoResponseError
@@ -268,7 +268,7 @@ class DNSBruteForcer
       t.abort_on_exception = true #¿?
       t.join
     }
-    return foundhosts
+    return @foundhosts
   end
   
   ###################
@@ -283,13 +283,12 @@ class DNSBruteForcer
       if !nsservers.nil? and nsservers.size > 0
         if alldns
           nsservers.each{|dnsip|
-            bruteforceSubdomainsWithDNS(dnsip,domain).each {|record|
-              @foundhosts << record
-            }
+            bruteforceSubdomainsWithDNS(dnsip,domain) # .each {|record| @foundhosts << record }
           }
         else # Ask only to the first DNS
           dnsip = nsservers[0]
-          @foundhosts = bruteforceSubdomainsWithDNS(dnsip,domain)
+          # @foundhosts = 
+          bruteforceSubdomainsWithDNS(dnsip,domain)
         end
       else
         # We could not find nameservers for this domain
@@ -299,13 +298,12 @@ class DNSBruteForcer
         if !soaserver.nil? and soaserver.size > 0
           if alldns
             soaserver.each{|soaip|
-              bruteforceSubdomainsWithDNS(soaip,domain).each { |record|
-                @foundhosts << record
-              }
+              bruteforceSubdomainsWithDNS(soaip,domain) # .each { |record| @foundhosts << record }
             }
           else # Ask only to the first DNS
             soaip = soaserver[0]
-            @foundhosts = bruteforceSubdomainsWithDNS(soaip,domain)
+            # @foundhosts = 
+            bruteforceSubdomainsWithDNS(soaip,domain)
           end
         else
           return nil          
