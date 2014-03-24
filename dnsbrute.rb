@@ -5,7 +5,8 @@ require 'pp'
 require 'optparse'
 require 'colorize'
 require 'nokogiri'
-require_relative 'DNSBruteForcer'
+require_relative 'lib/DNSBruteForcer'
+require_relative 'lib/PortScanner'
 
 
 ############
@@ -17,7 +18,8 @@ def parseOptions()
     :dns => nil,
     :geoinfo => false,
     :whois => false,
-    :nthreads => 5
+    :nthreads => 5,
+    :overwrite => false 
   }
   optparse = OptionParser.new do |opts|   
     
@@ -41,6 +43,9 @@ def parseOptions()
     opts.on( '-f', '--force-dns [DNS]', 'Force the enumeration against this DNS instead of the authoritative ones' ) do |dns|
       options[:dns] = dns
     end
+    opts.on( '-o', '--overwrite', 'Force overwriting previous output files' ) do
+      options[:overwrite] = true
+    end    
     opts.on( '-h', '--help', 'Help screen' ) do
       puts optparse
       exit
@@ -60,7 +65,7 @@ end
 ##########################
 
 def saveOutputKML(ofile,foundhosts)
-  oxml = File.open(ofile,"w")
+  oxml = File.open(ofile,"w:UTF-8")
   
   builder = Nokogiri::XML::Builder.new {|xml|
     xml.kml('xmlns' => "http://earth.google.com/kml/2.2") {
@@ -79,7 +84,7 @@ def saveOutputKML(ofile,foundhosts)
                 ==================
                 <br/>
                 #{whois}<br/>
-                """
+                """.force_encoding("ASCII-8BIT")
               xml.Point {
                 xml.coordinates "#{h[:geo]["longitude"].to_f},#{h[:geo]["latitude"].to_f},0.0"
               }
@@ -123,7 +128,7 @@ end
 ###################
 
 def saveOutputCSV(ofile, foundhosts)
-  f = File.open(ofile,"w")
+  f = File.open(ofile,"w:UTF-8")
   f.puts("hostname;address;type;Geo. Info.;Whois Info")
   foundhosts.each{|h|
     geoinfo = ""
@@ -133,7 +138,7 @@ def saveOutputCSV(ofile, foundhosts)
       geoinfo += "#{h[:geo]["country_name"]} "  if !h[:geo]["country_name"].nil? and h[:geo]["country_name"].size > 0
       geoinfo += "(Lat.: #{h[:geo]["latitude"]}, Long.: #{h[:geo]["longitude"]})" if !h[:geo]["latitude"].nil? and !h[:geo]["longitude"].nil?
     end
-    f.puts "\"#{h[:name]}\";\"#{h[:ip]}\";\"#{h[:type]}\";\"#{geoinfo}\";\"#{h[:whois]}\"" 
+    f.puts "\"#{h[:name]}\";\"#{h[:ip]}\";\"#{h[:type]}\";\"#{geoinfo}\";#{h[:whois]}".force_encoding("UTF-8")
   }
   f.close
 end
@@ -237,12 +242,19 @@ end
 csvname = "outputs/csv/#{op[:domain].gsub("/","_").gsub(":","_")}.csv"
 kmlname = "outputs/maps/#{op[:domain].gsub("/","_").gsub(":","_")}.kml"
 
-ofc = avoidOverwritingOutput(csvname)
+ofc = csvname
+if !op[:overwrite]
+  ofc = avoidOverwritingOutput(csvname)
+end
 if !ofc.nil?
   saveOutputCSV(ofc,hosts)
   puts "Results were saved in '#{ofc}'."
 end
-ofk = avoidOverwritingOutput(kmlname)
+
+ofk = kmlname
+if !op[:overwrite]
+    ofk = avoidOverwritingOutput(kmlname)
+end
 if !ofk.nil?
   saveOutputKML(ofk,hosts)
   puts "Maps were saved in '#{ofk}'."

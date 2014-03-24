@@ -228,8 +228,10 @@ class DNSBruteForcer
     
     # Split the dictionary in parts for the threads
     words_for_threads = splitDictionary()
+    th = []
+    # Create the threads and then will join all together
     words_for_threads.each{|words|
-      t = Thread.new {
+      th << Thread.new {
         # each thread ask for a subset of the dictionary
         words.each { |subdomain|
           targeth = "#{subdomain.chomp}.#{domain}"
@@ -265,8 +267,10 @@ class DNSBruteForcer
           end
         }        
       }
+    }
+    th.each {|t|
       t.abort_on_exception = true #¿?
-      t.join
+      t.join      
     }
     return @foundhosts
   end
