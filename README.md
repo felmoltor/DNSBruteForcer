@@ -3,6 +3,8 @@ DNSBruteForcer
 
 Zone transfer a domain  from its own NS servers and bruteforce subdomains.
 
+Sample usage video: https://www.youtube.com/watch?v=pljrlDSylNM
+
 Usage
 -----
 
@@ -14,6 +16,7 @@ Usage: ./dnsbrute.rb [OPTIONS]
     -g, --geo-info                   Get also the geographic information of the host from freegeoip.net
     -w, --whois                      Get also the whois information of every hostname found
     -f, --force-dns [DNS]            Force the enumeration against this DNS instead of the authoritative ones
+    -o, --overwrite                  Force overwriting previous output files
     -h, --help                       Help screen
 ```
 
