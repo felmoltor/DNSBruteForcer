@@ -1,0 +1,12 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    colorize (0.7.3)
+    nokogiri (1.5.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  colorize
+  nokogiri (~> 1.5.5)
