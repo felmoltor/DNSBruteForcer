@@ -1,9 +1,20 @@
 DNSBruteForcer
 ==============
 
+Summary
+-------
+
 Zone transfer a domain  from its own NS servers and bruteforce subdomains.
 
 Sample usage video: https://www.youtube.com/watch?v=pljrlDSylNM
+
+Install
+-------
+
+* $ git clone https://github.com/felmoltor/DNSBruteForcer
+* $ cd DNSBruteForcer
+* $ bundler install
+* $ ./dnsbrute.rb -h
 
 Usage
 -----
