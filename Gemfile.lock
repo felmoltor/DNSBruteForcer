@@ -1,12 +1,30 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (4.1.8)
+      i18n (~> 0.6, >= 0.6.9)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.1)
+      tzinfo (~> 1.1)
     colorize (0.7.3)
+    i18n (0.6.11)
+    json (1.8.1)
+    minitest (5.4.3)
+    net-dns (0.8.0)
     nokogiri (1.5.5)
+    thread_safe (0.3.3)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+    whois (3.5.8)
+      activesupport (>= 3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   colorize
+  json
+  net-dns
   nokogiri (~> 1.5.5)
+  whois
